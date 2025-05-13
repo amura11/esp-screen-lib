@@ -1,0 +1,9 @@
+name: "esp_screen_lib"
+version: "0.1.0"
+description: "Generic TFT driver and renderer library for ESP-IDF"
+dependencies:
+  idf: ">=5.0"
+  driver: "*"
+targets:
+  - esp32
+  - esp32s3

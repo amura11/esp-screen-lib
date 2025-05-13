@@ -1,0 +1,26 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.espIdfPathWin": "D:\\SDK\\Espressif\\frameworks\\esp-idf-v5.3.2",
+  "idf.pythonInstallPath": "D:\\SDK\\Espressif\\tools\\tools\\idf-python\\3.11.2\\python.exe",
+  "idf.openOcdConfigs": [
+    "interface/ftdi/esp32_devkitj_v1.cfg",
+    "target/esp32.cfg"
+],
+  "idf.toolsPathWin": "D:\\SDK\\Espressif\\tools",
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32"
+},
+"yaml.schemas": {
+    "https://raw.githubusercontent.com/Cloud-Pipelines/component_spec_schema/stable/component_spec.json_schema.json": "file:///c%3A/Users/Andrew/Code/esp-screen-lib/components/esp_screen_lib/component.yaml"
+},
+"files.associations": {
+    "compare": "cpp",
+    "cstdint": "cpp",
+    "esp_flash.h": "c",
+    "utilities.h": "c",
+    "bitset": "c",
+    "string_view": "c",
+    "regex": "c",
+    "screen_spi_transport_internal.h": "c"
+}
+}
