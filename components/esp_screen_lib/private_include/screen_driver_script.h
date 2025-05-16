@@ -1,7 +1,7 @@
 #pragma once
 
+#include <stdint.h>
 #include "screen_transport.h"
-#include "screen_spi_transport_internal.h"
 
 #define PARAMETERS_FLAG 0b01000000
 #define DELAY_FLAG 0b10000000
@@ -63,5 +63,7 @@
 
 #define SCRIPT_LENGTH(x) (x)
 #define COMMAND(...) COMMAND_DISPATCH(__VA_ARGS__)
-#define PARAMETERS(command, length) (PCOMMAND_FLAG | (length & 0b00111111)), command
+#define PARAMETERS(command, length) (PARAMETERS_FLAG | (length & 0b00111111)), command
 #define DELAY(length) (DELAY_FLAG | ((((uint16_t)length) & 0x0F00) >> 8)), (((uint16_t)length) & 0x00FF)
+
+esp_err_t screen_driver_execute_script(const screen_transport_t *transport, const uint8_t *script, const uint8_t *parameters, size_t parameters_length);

@@ -1,10 +1,40 @@
 #include "transports/screen_spi_transport_internal.h"
+#include "driver/gpio.h"
+#include "driver/spi_master.h"
+#include "transports/screen_spi_transport.h"
 
-static void pre_transfer_callback(spi_transaction_t *transaction)
+typedef enum
 {
-    transaction_user_data_t *data = (transaction_user_data_t *)transaction->user;
-    gpio_set_level(data->mode_pin, data->mode_value);
-}
+    MODE_COMMAND = 0,
+    MODE_DATA = 1
+} dc_mode_t;
+
+typedef struct
+{
+    dc_mode_t mode_value;
+    gpio_num_t mode_pin;
+} transaction_user_data_t;
+
+typedef struct {
+    /// @brief The device handle to pass to ESP-IDF SPI methods.
+    spi_device_handle_t device;
+    
+    /// @brief The GPIO pin for D/C line.
+    gpio_num_t mode_pin;
+
+    /// @brief A flag indicating if a DMA transfer is taking place.
+    bool dma_in_flight;
+} screen_spi_transport_t;
+
+static void pre_transfer_callback(spi_transaction_t *transaction);
+
+// Blocking
+static esp_err_t send_command(const screen_transport_t *transport, uint8_t command);
+static esp_err_t send_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length);
+
+//DMA
+static esp_err_t send_dma_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length);
+static esp_err_t flush_dma_data(const screen_transport_t *transport);
 
 esp_err_t screen_spi_transport_create(const screen_spi_transport_config_t *config, screen_transport_t *transport)
 {
@@ -56,15 +86,21 @@ esp_err_t screen_spi_transport_create(const screen_spi_transport_config_t *confi
 
     // Configure the transport struct
     transport->context = spi_transport;
-    transport->send_command = screen_spi_transport_send_command;
-    transport->send_data = screen_spi_transport_send_data;
-    transport->send_dma_data = screen_spi_transport_send_dma_data;
-    transport->flush_dma_data = screen_spi_transport_flush_dma_data;
+    transport->send_command = send_command;
+    transport->send_data = send_data;
+    transport->send_dma_data = send_dma_data;
+    transport->flush_dma_data = flush_dma_data;
 
     return result;
 }
 
-esp_err_t screen_spi_transport_send_command(const screen_transport_t *transport, uint8_t command)
+static void pre_transfer_callback(spi_transaction_t *transaction)
+{
+    transaction_user_data_t *data = (transaction_user_data_t *)transaction->user;
+    gpio_set_level(data->mode_pin, data->mode_value);
+}
+
+static esp_err_t send_command(const screen_transport_t *transport, uint8_t command)
 {
     screen_spi_transport_t *spi_transport = (screen_spi_transport_t *)transport->context;
 
@@ -81,7 +117,7 @@ esp_err_t screen_spi_transport_send_command(const screen_transport_t *transport,
     return spi_device_polling_transmit(spi_transport->device, &transaction);
 }
 
-esp_err_t screen_spi_transport_send_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length)
+static esp_err_t send_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length)
 {
     screen_spi_transport_t *spi_transport = (screen_spi_transport_t *)transport->context;
 
@@ -98,7 +134,7 @@ esp_err_t screen_spi_transport_send_data(const screen_transport_t *transport, co
     return spi_device_polling_transmit(spi_transport->device, &transaction);
 }
 
-esp_err_t screen_spi_transport_send_dma_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length)
+static esp_err_t send_dma_data(const screen_transport_t *transport, const uint8_t *data, size_t data_length)
 {
     screen_spi_transport_t *spi_transport = (screen_spi_transport_t *)transport->context;
 
@@ -121,7 +157,7 @@ esp_err_t screen_spi_transport_send_dma_data(const screen_transport_t *transport
     return result;
 }
 
-esp_err_t screen_spi_transport_flush_dma_data(const screen_transport_t *transport)
+static esp_err_t flush_dma_data(const screen_transport_t *transport)
 {
     esp_err_t result = ESP_OK;
     screen_spi_transport_t *spi_transport = (screen_spi_transport_t *)transport->context;

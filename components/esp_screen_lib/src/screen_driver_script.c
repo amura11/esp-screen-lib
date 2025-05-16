@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "screen_driver_script.h"
 
 #ifndef CONFIG_FREERTOS_HZ

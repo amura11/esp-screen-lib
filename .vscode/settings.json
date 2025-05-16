@@ -21,6 +21,7 @@
     "bitset": "c",
     "string_view": "c",
     "regex": "c",
-    "screen_spi_transport_internal.h": "c"
+    "screen_spi_transport_internal.h": "c",
+    "functional": "c"
 }
 }
