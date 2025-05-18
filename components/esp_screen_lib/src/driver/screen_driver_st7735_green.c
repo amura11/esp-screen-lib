@@ -1,9 +1,9 @@
 #include "esp_log.h"
-#include "utilities/flow_control.h"
-#include "utilities/type_conversion.h"
-#include "drivers/screen_driver_st7735_green.h"
-#include "screen_st7735_common.h"
-#include "screen_driver_script.h"
+#include "utility/flow_control.h"
+#include "utility/type_conversion.h"
+#include "driver/screen_driver_internal.h"
+#include "driver/screen_st7735_common.h"
+#include "driver/screen_driver_st7735_green.h"
 
 typedef struct screen_st7735_green_driver_context_t
 {

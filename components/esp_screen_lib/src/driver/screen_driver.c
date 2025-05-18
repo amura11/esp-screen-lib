@@ -1,9 +1,5 @@
 #include <stdbool.h>
-#include "screen_driver_script.h"
-
-#ifndef CONFIG_FREERTOS_HZ
-#define CONFIG_FREERTOS_HZ 100
-#endif
+#include "screen_driver_internal.h"
 
 esp_err_t screen_driver_execute_script(const screen_transport_t *transport, const uint8_t *script, const uint8_t *parameters, size_t parameters_length)
 {

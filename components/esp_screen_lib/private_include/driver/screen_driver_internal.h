@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-#include "screen_transport.h"
+#include "screen_driver.h"
 
 #define PARAMETERS_FLAG 0b01000000
 #define DELAY_FLAG 0b10000000

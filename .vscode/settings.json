@@ -22,6 +22,7 @@
     "string_view": "c",
     "regex": "c",
     "screen_spi_transport_internal.h": "c",
-    "functional": "c"
+    "functional": "c",
+    "screen_renderer_internal.h": "c"
 }
 }
